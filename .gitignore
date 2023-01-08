@@ -1,0 +1,6 @@
+bin
+*.tsv
+*.txt
+settings.mk
+z64translated
+z64translated.exe
