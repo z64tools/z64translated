@@ -193,7 +193,7 @@ int main(int n, const char** arg) {
     Memfile_Fmt(&msg_out,
         "#ifndef DEFINE_MESSAGE\n"
         "#define Z64TRANSLATED\n"
-        "#define DEFINE_MESSAGE(a, b, c, d, e, f) 0\n\n"
+        "#define DEFINE_MESSAGE(a, b, c, d, e, f) 0,\n\n"
         
         "int z64translated[] = {\n"
         "#endif\n\n"
@@ -430,7 +430,6 @@ static void ControlWrite(TranslateContext* this, Control* ctrl, f32 pos, char* b
                 this->shift = invertf(ctrl->value / 180.0f);
                 this->shifted = true;
             case CTRL_COLOR:
-            case CTRL_TEXTID:
             case CTRL_BOX_BREAK_DELAYED:
             case CTRL_FADE:
             case CTRL_ITEM_ICON:
@@ -441,6 +440,7 @@ static void ControlWrite(TranslateContext* this, Control* ctrl, f32 pos, char* b
                 break;
                 
             // Arg 2
+            case CTRL_TEXTID:
             case CTRL_FADE2:
             case CTRL_SFX:
                 catprintf(buffer, "\"\\x%02X\\x%02X\\x%02X\"", ctrl->type,
@@ -485,6 +485,7 @@ void ParseEntry(TranslateContext* this, Toml* toml, const char* msg, Memfile* ou
     else {
         msg = x_strndup(msg, strlen(msg) * 4 + 2);
         strrep((void*)msg, "\"", "\\\"");
+        strrep((void*)msg, "…", "...");
     }
     
     this->shifted = false;
@@ -517,7 +518,7 @@ void ParseEntry(TranslateContext* this, Toml* toml, const char* msg, Memfile* ou
                 if (!this->marked_choice) {
                     this->marked_choice = true;
                     
-                    Memfile_Fmt(out, "%s_CHOICE\n", (max - id) == 2 ? "TWO" : "THREE");
+                    Memfile_Fmt(out, "%s_CHOICE \"\\n\"\n", (max - id) == 2 ? "TWO" : "THREE");
                 }
                 break;
             case BOX_SCROLL:
@@ -547,7 +548,7 @@ void ParseEntry(TranslateContext* this, Toml* toml, const char* msg, Memfile* ou
         
         for (var i = 0; i < box->num_ctrl; i++)
             ControlWrite(this, &box->ctrl[i], pos, buffer, &cur_width);
-        f32 max_width = (64 * 6) * this->shift;
+        f32 max_width = (64 * 5.5f) * this->shift;
         
         if (cur_width + w >= max_width) {
             strcat(buffer, "\\n\"\n\"");
@@ -578,5 +579,5 @@ void ParseEntry(TranslateContext* this, Toml* toml, const char* msg, Memfile* ou
     if (id + 1 != max)
         return;
     
-    Memfile_Cat(out, ", \"\", \"\"),\n");
+    Memfile_Cat(out, ", \"\", \"\")\n");
 }
