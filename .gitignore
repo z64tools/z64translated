@@ -4,3 +4,4 @@ bin
 settings.mk
 z64translated
 z64translated.exe
+test.h

@@ -1,6 +1,6 @@
 include setup.mk
 
-CFLAGS          = -Ofast -Wall -DEXTLIB=210 -I src/
+CFLAGS          = -g -Ofast -Wall -DEXTLIB=220 -I src/
 SOURCE_C        = $(shell find src/* -type f -name '*.c')
 SOURCE_O_LINUX := $(foreach f,$(SOURCE_C:.c=.o),bin/linux/$f)
 SOURCE_O_WIN32 := $(foreach f,$(SOURCE_C:.c=.o),bin/win32/$f)
