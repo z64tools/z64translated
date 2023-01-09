@@ -444,16 +444,16 @@ static void ControlWrite(TranslateContext* this, Control* ctrl, f32 pos, char* b
             case CTRL_FADE2:
             case CTRL_SFX:
                 catprintf(buffer, "\"\\x%02X\\x%02X\\x%02X\"", ctrl->type,
-                    ctrl->value >> 8,
-                    ctrl->value & 0xF);
+                    (ctrl->value >> 8) & 0xFF,
+                    ctrl->value & 0xFF);
                 break;
                 
             // Arg 3
             case CTRL_BACKGROUND:
                 catprintf(buffer, "\"\\x%02X\\x%02X\\x%02X\\x%02X\"", ctrl->type,
-                    (ctrl->value >> 16) & 0xF,
-                    (ctrl->value >> 8) & 0xF,
-                    ctrl->value & 0xF);
+                    (ctrl->value >> 16) & 0xFF,
+                    (ctrl->value >> 8) & 0xFF,
+                    ctrl->value & 0xFF);
                 break;
         }
         
