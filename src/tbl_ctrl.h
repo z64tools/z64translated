@@ -36,6 +36,17 @@ TABLE_CONTROL(CTRL_FISH_INFO,          0x1D, "fish_info"),
 TABLE_CONTROL(CTRL_HIGHSCORE,          0x1E, "highscore"),
 TABLE_CONTROL(CTRL_TIME,               0x1F, "time"),
 
+TABLE_CONTROL(CTRL_A,                  0x9F, "a"),
+TABLE_CONTROL(CTRL_B,                  0xA0, "b"),
+TABLE_CONTROL(CTRL_C,                  0xA1, "c"),
+TABLE_CONTROL(CTRL_L,                  0xA2, "l"),
+TABLE_CONTROL(CTRL_R,                  0xA3, "r"),
+TABLE_CONTROL(CTRL_Z,                  0xA4, "z"),
+TABLE_CONTROL(CTRL_CUP,                0xA5, "cup"),
+TABLE_CONTROL(CTRL_CDOWN,              0xA6, "cdown"),
+TABLE_CONTROL(CTRL_CLEFT,              0xA7, "cleft"),
+TABLE_CONTROL(CTRL_CRIGHT,             0xA8, "cright"),
+
 #ifdef PLEASE_THE_IDE
 };
 #endif
