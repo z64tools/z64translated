@@ -1,14 +1,15 @@
 #define TRANSLATED_C
 #include "translated.h"
 
-// # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+/*============================================================================*/
 
 int main(int n, const char** arg) {
     const char* input = NULL;
     const char* output = NULL;
     const char* fm = NULL;
     int i = 0;
-    const char* usage = "z64translated --i <msg.tsv> --o <message.h> --fmt base-msg.toml";
+    const char* usage =
+        "z64translated --i <msg.tsv> --o <message.h> --fmt base-msg.toml";
     
     if ((i = strarg(arg, "b")))
         fm = arg[i];
@@ -58,7 +59,8 @@ int main(int n, const char** arg) {
     }
     Message_End(ctx);
     
-    const char* raw_filename = x_fmt("%s%s", x_path(output), x_basename(output));
+    const char* raw_filename =
+        x_fmt("%s%s", x_path(output), x_basename(output));
     
     if (striend(output, ".bin") || striend(output, ".tbl"))
         Memfile_SaveBin(&output_tbl, x_fmt("%s.tbl", raw_filename) ),
@@ -86,7 +88,29 @@ int main(int n, const char** arg) {
         input, fm, output, time_get(2) * 1000.0f);
 }
 
-// # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+/*============================================================================*/
+
+static const char* Message_GetUnicode(const char* point, bool null) {
+    for (var i = 0; i < ArrCount(sSpcCharMap); i++)
+        if (!memcmp(sSpcCharMap[i][0], point, 2))
+            return sSpcCharMap[i][1];
+    
+    if (!null)
+        return "\x9B";
+    return NULL;
+}
+
+static int Message_RemapChar(const char* point) {
+    u8 val = *point;
+    
+    if ((val & 0xE0) == 0xC0) {
+        if (Message_GetUnicode(point, true))
+            return *Message_GetUnicode(point, true);
+        return '?' - ' ';
+    }
+    
+    return val - ' ';
+}
 
 static int Message_WriteByte(State* this, u32 num, ...) {
     va_list va;
@@ -103,7 +127,8 @@ static int Message_WriteByte(State* this, u32 num, ...) {
 }
 
 #ifndef __clang__
-#define Message_WriteByte(ctx, ...) Message_WriteByte(ctx, NARGS(__VA_ARGS__), __VA_ARGS__)
+#define Message_WriteByte(ctx, ...) \
+    Message_WriteByte(ctx, NARGS(__VA_ARGS__), __VA_ARGS__)
 #endif
 
 static int Message_WriteStr(State* this, const char* str) {
@@ -115,16 +140,10 @@ static int Message_WriteStr(State* this, const char* str) {
         else if (0xe0 == (0xf0 & *str))
             str += 3;
         else if (0xc0 == (0xe0 & *str)) {
-            for (var i = 0; i < ArrCount(sSpcCharMap); i++) {
-                if (!memcmp(sSpcCharMap[i][0], str, 2)) {
-                    Message_WriteByte(this, *sSpcCharMap[i][1]);
-                    len++;
-                    
-                    break;
-                }
-            }
+            Message_WriteByte(this, *Message_GetUnicode(str, false));
             
             str += 2;
+            len++;
         } else {
             _assert(*str != '\n');
             
@@ -150,17 +169,18 @@ void State_Delete(State* this) {
     vfree(this);
 }
 
-// # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+/*============================================================================*/
 
 static Item* Item_New(State* this) {
     Item* item = new(Item);
-    const char* type = Toml_GetStr(this->toml, "entry[%d].item[%d].box_type", this->entry_index, this->item_index);
-    int num_ctrl = Toml_ArrItemNum(this->toml, "entry[%d].item[%d].ctrl_type", this->entry_index, this->item_index);
-    int num_pos = Toml_ArrItemNum(this->toml, "entry[%d].item[%d].ctrl_pos", this->entry_index, this->item_index);
-    int num_val = Toml_ArrItemNum(this->toml, "entry[%d].item[%d].ctrl_val", this->entry_index, this->item_index);
+    const char* entry_item = x_fmt("entry[%d].item[%d]", this->entry_index, this->item_index);
+    const char* type = Toml_GetStr(this->toml, "%s.box_type", entry_item);
+    int num_ctrl = Toml_ArrItemNum(this->toml, "%s.ctrl_type", entry_item);
+    int num_pos = Toml_ArrItemNum(this->toml, "%s.ctrl_pos", entry_item);
+    int num_val = Toml_ArrItemNum(this->toml, "%s.ctrl_val", entry_item);
     
     _log("%04X", this->msg_index);
-    _log("entry[%d].item[%d]", this->entry_index, this->item_index);
+    _log("%s", entry_item);
     _assert(num_pos == num_ctrl);
     
     for (; item->type < ArrCount(sBoxType); item->type++)
@@ -172,14 +192,14 @@ static Item* Item_New(State* this) {
     _log("type:     %s", sBoxType[item->type]);
     vfree(type);
     
-    item->vlen = Toml_GetInt(this->toml, "entry[%d].item[%d].vanilla_strlen", this->entry_index, this->item_index);
+    item->vlen = Toml_GetInt(this->toml, "%s.vanilla_strlen", entry_item);
     _log("strlen:   %d", item->vlen);
     
     item->ctrl = new(Control[num_ctrl]);
     item->num_ctrl = num_ctrl;
     for (var i = 0; i < num_ctrl; i++) {
-        type = Toml_GetStr(this->toml, "entry[%d].item[%d].ctrl_type[%d]", this->entry_index, this->item_index, i);
-        item->ctrl[i].pos = Toml_GetInt(this->toml, "entry[%d].item[%d].ctrl_pos[%d]", this->entry_index, this->item_index, i);
+        type = Toml_GetStr(this->toml, "%s.ctrl_type[%d]", entry_item, i);
+        item->ctrl[i].pos = Toml_GetInt(this->toml, "%s.ctrl_pos[%d]", entry_item, i);
         item->ctrl[i].pos /= item->vlen;
         
         for (; item->ctrl[i].type < CTRL_MAX; item->ctrl[i].type++)
@@ -190,11 +210,11 @@ static Item* Item_New(State* this) {
         vfree(type);
         
         if (i < num_val)
-            item->ctrl[i].value = Toml_GetInt(this->toml, "entry[%d].item[%d].ctrl_val[%d]", this->entry_index, this->item_index, i);
+            item->ctrl[i].value = Toml_GetInt(this->toml, "%s.ctrl_val[%d]", entry_item, i);
     }
     
     if (item->type == BOX_SCROLL) {
-        item->delay = Toml_GetInt(this->toml, "entry[%d].item[%d].break_delay", this->entry_index, this->item_index);
+        item->delay = Toml_GetInt(this->toml, "%s.break_delay", entry_item);
         _log("delay:    %d", item->delay);
     }
     
@@ -207,13 +227,20 @@ static void Item_Delete(Item* item) {
     vfree(item->ctrl, item);
 }
 
-// # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+/*============================================================================*/
+
+static inline f32 BoxInfo_GetPos(BoxInfo* box) {
+    if (!box) return 4096.0f;
+    
+    return box->cur_len / box->max_len;
+}
 
 static f32 Message_GetWidth(const char* word) {
     f32 w = 0.0f;
     
     for (; *word; word++)
-        w += sFontWidths[(u8)(*word)];
+        w += sFontWidths[Message_RemapChar(word)];
+    
     return w;
 }
 
@@ -261,12 +288,6 @@ static void Message_NewItem(State* this, Item* item) {
     }
 }
 
-static inline f32 BoxInfo_GetPos(BoxInfo* box) {
-    if (!box) return 4096.0f;
-    
-    return box->cur_len / box->max_len;
-}
-
 /*
    ┌───────────────────────────────────────────────────────────────────────────┐
    │     Takes care care of handling width based newlining and handles         │
@@ -307,9 +328,10 @@ static void Message_Process_Controls(State* this, Item* item, BoxInfo* box) {
             switch (ctrl->type) {
                 case CTRL_TOKENS:
                 case CTRL_TIME:
+                case CTRL_FISH_INFO:
                     Message_Process_Glue(this, box, " xx:xx");
                     box->cur_width += Message_GetWidth(" xx:xx");
-                    Message_WriteByte(this, ' ', ctrl->type);
+                    Message_WriteByte(this, ctrl->type);
                     break;
                 case CTRL_BOX_BREAK:
                 case CTRL_QUICKTEXT_ENABLE:
@@ -325,7 +347,6 @@ static void Message_Process_Controls(State* this, Item* item, BoxInfo* box) {
                 case CTRL_UNSKIPPABLE:
                 case CTRL_TWO_CHOICE:
                 case CTRL_THREE_CHOICE:
-                case CTRL_FISH_INFO:
                     Message_WriteByte(this, ctrl->type);
                     break;
                     
@@ -347,7 +368,7 @@ static void Message_Process_Controls(State* this, Item* item, BoxInfo* box) {
                     Message_WriteByte(this, ' ', ctrl->type, ctrl->value);
                     break;
                 case CTRL_ITEM_ICON:
-                    this->width_add = MAX_WIDTH * 0.12f;
+                    this->width_add = MAX_WIDTH * 0.10f;
                     box->cur_width += this->width_add;
                     Message_WriteByte(this, ctrl->type, ctrl->value);
                     break;
@@ -369,6 +390,7 @@ static void Message_Process_Controls(State* this, Item* item, BoxInfo* box) {
 }
 
 static void Message_Process(State* this, Item* item, const char* msg) {
+    const char* __word = msg;
     BoxInfo box = {
         .max_len    = strlen(msg),
         .cur_width  = this->width_add,
@@ -376,21 +398,18 @@ static void Message_Process(State* this, Item* item, const char* msg) {
         .first_word = true,
     };
     
-    for (const char* __word = msg; __word && *__word; __word = strword(__word, 1)) {
+    for (; __word && *__word; __word = strword(__word, 1)) {
         const char* word = x_cpyword(__word, 0);
+        const char* a = x_strndup(msg, __word - msg);
+        const char* b = word;
+        const char* c = x_strdup(msg + (a ? str8len(a) : 0) + str8len(word));
+        
+        _log("" PRNT_GRAY "%s" PRNT_RSET "%s" PRNT_GRAY "%s",
+            a ? a : "",
+            b ? b : "",
+            c ? c : "");
         
         Message_Process_Controls(this, item, &box);
-        
-        {
-            const char* a = x_strndup(msg, __word - msg);
-            const char* b = word;
-            const char* c = x_strdup(msg + (a ? str8len(a) : 0) + str8len(word));
-            
-            _log("" PRNT_GRAY "%s" PRNT_RSET "%s" PRNT_GRAY "%s",
-                a ? a : "",
-                b ? b : "",
-                c ? c : "");
-        }
         
         Message_Process_Glue(this, &box, word);
         box.cur_width += Message_GetWidth(word);
@@ -405,7 +424,6 @@ static void Message_Process(State* this, Item* item, const char* msg) {
     if (this->marked_choice && this->item_index + 1 < this->item_num)
         Message_WriteByte(this, CTRL_NEWLINE);
     
-    // Flush rest of controllers in
     if (this->item_index + 1 == this->item_num)
         Message_Process_Controls(this, item, &box);
 }
@@ -464,7 +482,7 @@ void Message_End(State* this) {
     Memfile_Align(this->data, 16);
 }
 
-// # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+/*============================================================================*/
 
 void Message_C(State* this, const char* file) {
     MsgEntryBE* tbl = this->tbl->data;

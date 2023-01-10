@@ -96,7 +96,7 @@ const char* sBoxType[] = {
     [BOX_SCROLL] = "scroll",
 };
 
-#define MAX_WIDTH (64.0f * 5.0f)
+#define MAX_WIDTH (64.0f * 4.85f)
 
 // # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
