@@ -11,10 +11,6 @@ int main(int n, const char** arg) {
     const char* usage =
         "z64translated --i <msg.tsv> --o <message.h> --fmt base-msg.toml";
     
-    if ((i = strarg(arg, "b")))
-        fm = arg[i];
-    else errr("no fmt file provided!\n%s", usage);
-    
     if ((i = strarg(arg, "i")))
         input = arg[i];
     else errr("no input provided!\n%s", usage);
@@ -22,6 +18,40 @@ int main(int n, const char** arg) {
     if ((i = strarg(arg, "o")))
         output = arg[i];
     else errr("no output provided!\n%s", usage);
+    
+    if (strarg(arg, "dump")) {
+        Memfile input_rom = Memfile_New();
+        Memfile output_nsv = Memfile_New();
+        Toml base = Toml_New();
+        
+        info_title("z64translated", NULL);
+        time_start(2);
+        
+        Memfile_LoadBin(&input_rom, input);
+        Memfile_Alloc(&output_nsv, MbToBin(0.5f));
+        
+        Message_Dump(&input_rom, &output_nsv, &base);
+        
+        Memfile_SaveBin(&output_nsv, output);
+        if ((i = strarg(arg, "b")))
+            Toml_Save(&base, arg[i]);
+        
+        Memfile_Free(&input_rom);
+        Memfile_Free(&output_nsv);
+        Toml_Free(&base);
+        
+        info(
+            "input:  %32s\n"
+            "output: %32s\n"
+            "time:   %30.2fms",
+            input, output, time_get(2) * 1000.0f);
+        
+        return 0;
+    }
+    
+    if ((i = strarg(arg, "b")))
+        fm = arg[i];
+    else errr("no base fmt file provided!\n%s", usage);
     
     info_title("z64translated", NULL);
     
@@ -90,23 +120,25 @@ int main(int n, const char** arg) {
 
 /*============================================================================*/
 
-static const char* Message_GetUnicode(const char* point, bool null) {
+static const char* Message_EncodeChar(const char* point) {
     for (var i = 0; i < ArrCount(sSpcCharMap); i++)
         if (!memcmp(sSpcCharMap[i][0], point, 2))
             return sSpcCharMap[i][1];
-    
-    if (!null)
-        return "\x9B";
-    return NULL;
+    return "i";
 }
 
-static int Message_RemapChar(const char* point) {
+static const char* Message_DecodeChar(const u8* point) {
+    for (var i = 0; i < ArrCount(sSpcCharMap); i++)
+        if (!memcmp(sSpcCharMap[i][1], point, 1))
+            return sSpcCharMap[i][0];
+    return "i";
+}
+
+static int Message_WidthCharRemap(const char* point) {
     u8 val = *point;
     
     if ((val & 0xE0) == 0xC0) {
-        if (Message_GetUnicode(point, true))
-            return *Message_GetUnicode(point, true);
-        return '?' - ' ';
+        return *Message_EncodeChar(point);
     }
     
     return val - ' ';
@@ -124,12 +156,12 @@ static int Message_WriteByte(State* this, u32 num, ...) {
     va_end(va);
     
     return num;
-}
-
+    
 #ifndef __clang__
-#define Message_WriteByte(ctx, ...) \
-    Message_WriteByte(ctx, NARGS(__VA_ARGS__), __VA_ARGS__)
+    #define Message_WriteByte(ctx, ...) \
+        Message_WriteByte(ctx, NARGS(__VA_ARGS__), __VA_ARGS__)
 #endif
+}
 
 static int Message_WriteStr(State* this, const char* str) {
     int len = 0;
@@ -140,7 +172,7 @@ static int Message_WriteStr(State* this, const char* str) {
         else if (0xe0 == (0xf0 & *str))
             str += 3;
         else if (0xc0 == (0xe0 & *str)) {
-            Message_WriteByte(this, *Message_GetUnicode(str, false));
+            Message_WriteByte(this, *Message_EncodeChar(str));
             
             str += 2;
             len++;
@@ -153,6 +185,171 @@ static int Message_WriteStr(State* this, const char* str) {
     }
     
     return len;
+}
+
+/*============================================================================*/
+
+static void Message_Dump_Entry(Memfile* out, Toml* base, const u8* msg, int index) {
+    bool choice = false;
+    int ctrl_id = 0;
+    int item = 0;
+    int pos = 0;
+    int set_type = 0;
+    
+    Toml_SetVar(base, x_fmt("entry[%d].item[%d].type", index, item), "\"entry\"", ++set_type);
+    for (; *msg != CTRL_END; msg++) {
+        switch (*msg) {
+            case CTRL_NEWLINE:
+                if (!choice) {
+                    if (pos) {
+                        Memfile_Cat(out, " ");
+                        pos++;
+                    }
+                    break;
+                }
+                set_type = 0;
+            case CTRL_TWO_CHOICE:
+            case CTRL_THREE_CHOICE:
+                choice = true;
+            case CTRL_BOX_BREAK_DELAYED:
+            case CTRL_BOX_BREAK:
+                Toml_SetVar(base, x_fmt("entry[%d].item[%d].char_count", index, item), "%d", pos);
+                item++;
+                ctrl_id = pos = 0;
+                
+                while (out->str[out->seekPoint - 1] == ' ')
+                    out->seekPoint--,
+                    out->size--;
+                _assert(out->str[out->seekPoint - 1] != ' ');
+                
+                Memfile_Cat(out, "\n");
+                
+                switch (*msg) {
+                    case CTRL_NEWLINE:
+                    case CTRL_TWO_CHOICE:
+                    case CTRL_THREE_CHOICE:
+                        Toml_SetVar(base, x_fmt("entry[%d].item[%d].type", index, item), "\"choice\"", ++set_type);
+                        break;
+                    case CTRL_BOX_BREAK_DELAYED:
+                        Toml_SetVar(base, x_fmt("entry[%d].item[%d].type", index, item), "\"scroll\"", ++set_type);
+                        break;
+                    case CTRL_BOX_BREAK:
+                        Toml_SetVar(base, x_fmt("entry[%d].item[%d].type", index, item), "\"break\"", ++set_type);
+                        break;
+                }
+                
+                set_type = 0;
+                
+                break;
+                
+            case CTRL_NAME:
+                Memfile_Cat(out, "BRO");
+                break;
+                
+            case CTRL_QUICKTEXT_ENABLE:
+            case CTRL_QUICKTEXT_DISABLE:
+            case CTRL_PERSISTENT:
+            case CTRL_EVENT:
+            case CTRL_OCARINA:
+            case CTRL_MARATHON_TIME:
+            case CTRL_RACE_TIME:
+            case CTRL_POINTS:
+            case CTRL_TOKENS:
+            case CTRL_UNSKIPPABLE:
+            case CTRL_FISH_INFO:
+            case CTRL_TIME:
+                Toml_SetVar(base, x_fmt("entry[%d].item[%d].ctrl_pos[%d]", index, item, ctrl_id), "%d", pos);
+                Toml_SetVar(base, x_fmt("entry[%d].item[%d].ctrl_type[%d]", index, item, ctrl_id), "\"%s\"", sCtrlType[*msg]);
+                ctrl_id++;
+                break;
+                
+            case CTRL_A ... CTRL_CRIGHT:
+                Toml_SetVar(base, x_fmt("entry[%d].item[%d].ctrl_pos[%d]", index, item, ctrl_id), "%d", pos);
+                Toml_SetVar(base, x_fmt("entry[%d].item[%d].ctrl_type[%d]", index, item, ctrl_id), "\"%s\"", sCtrlType[*msg]);
+                ctrl_id++;
+                msg += 3; // NOTE: this seems odd to skip so many characters :thinking_emoji:
+                break;
+                
+            case CTRL_FADE:
+            case CTRL_COLOR:
+            case CTRL_SHIFT:
+            case CTRL_ITEM_ICON:
+            case CTRL_TEXT_SPEED:
+            case CTRL_HIGHSCORE:
+                Toml_SetVar(base, x_fmt("entry[%d].item[%d].ctrl_pos[%d]", index, item, ctrl_id), "%d", pos);
+                Toml_SetVar(base, x_fmt("entry[%d].item[%d].ctrl_type[%d]", index, item, ctrl_id), "\"%s\"", sCtrlType[*msg]);
+                Toml_SetVar(base, x_fmt("entry[%d].item[%d].ctrl_val[%d]", index, item, ctrl_id), "0x%02X", msg[1]);
+                ctrl_id++;
+                
+                msg++;
+                break;
+                
+            case CTRL_TEXTID:
+            case CTRL_FADE2:
+            case CTRL_SFX:
+                Toml_SetVar(base, x_fmt("entry[%d].item[%d].ctrl_pos[%d]", index, item, ctrl_id), "%d", pos);
+                Toml_SetVar(base, x_fmt("entry[%d].item[%d].ctrl_type[%d]", index, item, ctrl_id), "\"%s\"", sCtrlType[*msg]);
+                Toml_SetVar(base, x_fmt("entry[%d].item[%d].ctrl_val[%d]", index, item, ctrl_id), "0x%04X", msg[0] << 8 | msg[1]);
+                ctrl_id++;
+                
+                msg += 2;
+                break;
+                
+            case CTRL_BACKGROUND:
+                Toml_SetVar(base, x_fmt("entry[%d].item[%d].ctrl_pos[%d]", index, item, ctrl_id), "%d", pos);
+                Toml_SetVar(base, x_fmt("entry[%d].item[%d].ctrl_type[%d]", index, item, ctrl_id), "\"%s\"", sCtrlType[*msg]);
+                Toml_SetVar(base, x_fmt("entry[%d].item[%d].ctrl_val[%d]", index, item, ctrl_id), "0x%06X", msg[2] << 16 | msg[1] << 8 | msg[1]);
+                ctrl_id++;
+                
+                msg += 3;
+                break;
+                
+            case 'A' ... 'Z':
+                Memfile_Fmt(out, "%c", tolower(*msg));
+                pos++;
+                break;
+            case 'a' ... 'z':
+            case '0' ... '9':
+            case ' ' ... '/':
+                if (*msg == ' ' && pos == 0)
+                    break;
+            case '[' ... '`':
+            case '{' ... '~':
+                Memfile_Fmt(out, "%c", *msg);
+                pos++;
+                break;
+            case 0x80 ... 0x9E:
+                Memfile_Cat(out, Message_DecodeChar(msg));
+                pos++;
+                break;
+        }
+    }
+    
+    Toml_SetVar(base, x_fmt("entry[%d].item[%d].char_count", index, item), "%d", pos);
+    
+    while (out->str[out->seekPoint - 1] == ' ')
+        out->seekPoint--,
+        out->size--;
+    _assert(out->str[out->seekPoint - 1] != ' ');
+    Memfile_Cat(out, "\n");
+}
+
+void Message_Dump(Memfile* rom, Memfile* out, Toml* base) {
+    MsgEntryBE* tbl;
+    
+    *base = Toml_New();
+    
+    SegmentSet(0, rom->data);
+    SegmentSet(7, SegmentToVirtual(0, 0x8C6000));
+    tbl = SegmentToVirtual(0, 0xBC24C0);
+    
+    for (int index = 0; tbl->text_index != 0xFFFF; tbl++, index++) {
+        const u8* msg = SegmentToVirtual(7, tbl->segment & 0xFFFFFF);
+        
+        Toml_SetVar(base, x_fmt("entry[%d].index", index), "0x%04X", tbl->text_index);
+        Toml_SetVar(base, x_fmt("entry[%d].type_pos", index), "0x%02X", tbl->type << 4 | tbl->pos);
+        Message_Dump_Entry(out, base, msg, index);
+    }
 }
 
 State* State_New(Memfile* tbl, Memfile* data, Toml* toml) {
@@ -174,12 +371,12 @@ void State_Delete(State* this) {
 static Item* Item_New(State* this) {
     Item* item = new(Item);
     const char* entry_item = x_fmt("entry[%d].item[%d]", this->entry_index, this->item_index);
-    const char* type = Toml_GetStr(this->toml, "%s.box_type", entry_item);
+    const char* type = Toml_GetStr(this->toml, "%s.type", entry_item);
     int num_ctrl = Toml_ArrItemNum(this->toml, "%s.ctrl_type", entry_item);
     int num_pos = Toml_ArrItemNum(this->toml, "%s.ctrl_pos", entry_item);
     int num_val = Toml_ArrItemNum(this->toml, "%s.ctrl_val", entry_item);
     
-    _log("%04X", this->msg_index);
+    _log("0x%04X", this->msg_index);
     _log("%s", entry_item);
     _assert(num_pos == num_ctrl);
     
@@ -192,7 +389,7 @@ static Item* Item_New(State* this) {
     _log("type:     %s", sBoxType[item->type]);
     vfree(type);
     
-    item->vlen = Toml_GetInt(this->toml, "%s.vanilla_strlen", entry_item);
+    item->vlen = Toml_GetInt(this->toml, "%s.char_count", entry_item);
     _log("strlen:   %d", item->vlen);
     
     item->ctrl = new(Control[num_ctrl]);
@@ -239,7 +436,7 @@ static f32 Message_GetWidth(const char* word) {
     f32 w = 0.0f;
     
     for (; *word; word++)
-        w += sFontWidths[Message_RemapChar(word)];
+        w += sFontWidths[Message_WidthCharRemap(word)];
     
     return w;
 }

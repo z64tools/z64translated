@@ -8,3 +8,7 @@ z64translated.exe
 *.bin
 *.h
 !*/**.h
+*.z64
+*.nsv
+*.tsv
+*.csv

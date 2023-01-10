@@ -1,6 +1,6 @@
 include setup.mk
 
-CFLAGS          = -g -Ofast -Wall -DEXTLIB=220 -I src/
+CFLAGS          = -Os -Wall -DEXTLIB=220 -I src/
 SOURCE_C        = $(shell find src/* -type f -name '*.c')
 SOURCE_O_LINUX := $(foreach f,$(SOURCE_C:.c=.o),bin/linux/$f)
 SOURCE_O_WIN32 := $(foreach f,$(SOURCE_C:.c=.o),bin/win32/$f)
@@ -12,8 +12,6 @@ RELEASE_EXECUTABLE_WIN32 := z64translated.exe
 $(shell mkdir -p bin/ $(foreach dir, \
 	$(dir $(SOURCE_O_WIN32)) \
 	$(dir $(SOURCE_O_LINUX)) \
-	$(dir $(RELEASE_EXECUTABLE_LINUX)) \
-	$(dir $(RELEASE_EXECUTABLE_WIN32)) \
 	, $(dir)))
 
 .PHONY: default \
