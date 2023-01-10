@@ -1,184 +1,5 @@
+#define TRANSLATED_C
 #include "translated.h"
-
-// # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-
-#define TABLE_CONTROL(enum, val, str) enum = val
-enum {
-#include "tbl_ctrl.h"
-    CTRL_MAX,
-};
-
-#define TABLE_CONTROL(enum, val, str) [enum] = str
-const char* sCtrlType[] = {
-#include "tbl_ctrl.h"
-};
-
-// # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-
-f32 sFontWidths[144] = {
-    8.0f,                      // ' '
-    8.0f,                      // '!'
-    6.0f,                      // '"'
-    9.0f,                      // '#'
-    9.0f,                      // '$'
-    14.0f,                     // '%'
-    12.0f,                     // '&'
-    3.0f,                      // '''
-    7.0f,                      // '('
-    7.0f,                      // ')'
-    7.0f,                      // '*'
-    9.0f,                      // '+'
-    4.0f,                      // ','
-    6.0f,                      // '-'
-    4.0f,                      // '.'
-    9.0f,                      // '/'
-    10.0f,                     // '0'
-    5.0f,                      // '1'
-    9.0f,                      // '2'
-    9.0f,                      // '3'
-    10.0f,                     // '4'
-    9.0f,                      // '5'
-    9.0f,                      // '6'
-    9.0f,                      // '7'
-    9.0f,                      // '8'
-    9.0f,                      // '9'
-    6.0f,                      // ':'
-    6.0f,                      // ';'
-    9.0f,                      // '<'
-    11.0f,                     // '='
-    9.0f,                      // '>'
-    11.0f,                     // '?'
-    13.0f,                     // '@'
-    12.0f,                     // 'A'
-    9.0f,                      // 'B'
-    11.0f,                     // 'C'
-    11.0f,                     // 'D'
-    8.0f,                      // 'E'
-    8.0f,                      // 'F'
-    12.0f,                     // 'G'
-    10.0f,                     // 'H'
-    4.0f,                      // 'I'
-    8.0f,                      // 'J'
-    10.0f,                     // 'K'
-    8.0f,                      // 'L'
-    13.0f,                     // 'M'
-    11.0f,                     // 'N'
-    13.0f,                     // 'O'
-    9.0f,                      // 'P'
-    13.0f,                     // 'Q'
-    10.0f,                     // 'R'
-    10.0f,                     // 'S'
-    9.0f,                      // 'T'
-    10.0f,                     // 'U'
-    11.0f,                     // 'V'
-    15.0f,                     // 'W'
-    11.0f,                     // 'X'
-    10.0f,                     // 'Y'
-    10.0f,                     // 'Z'
-    7.0f,                      // '['
-    10.0f,                     // '\'
-    7.0f,                      // ']'
-    10.0f,                     // '^'
-    9.0f,                      // '_'
-    5.0f,                      // '`'
-    8.0f,                      // 'a'
-    9.0f,                      // 'b'
-    8.0f,                      // 'c'
-    9.0f,                      // 'd'
-    9.0f,                      // 'e'
-    6.0f,                      // 'f'
-    9.0f,                      // 'g'
-    8.0f,                      // 'h'
-    4.0f,                      // 'i'
-    6.0f,                      // 'j'
-    8.0f,                      // 'k'
-    4.0f,                      // 'l'
-    12.0f,                     // 'm'
-    9.0f,                      // 'n'
-    9.0f,                      // 'o'
-    9.0f,                      // 'p'
-    9.0f,                      // 'q'
-    7.0f,                      // 'r'
-    8.0f,                      // 's'
-    7.0f,                      // 't'
-    8.0f,                      // 'u'
-    9.0f,                      // 'v'
-    12.0f,                     // 'w'
-    8.0f,                      // 'x'
-    9.0f,                      // 'y'
-    8.0f,                      // 'z'
-    7.0f,                      // '{'
-    5.0f,                      // '|'
-    7.0f,                      // '}'
-    10.0f,                     // '~'
-    10.0f,                     // '‾'
-    12.0f,                     // 'À'
-    6.0f,                      // 'î'
-    12.0f,                     // 'Â'
-    12.0f,                     // 'Ä'
-    11.0f,                     // 'Ç'
-    8.0f,                      // 'È'
-    8.0f,                      // 'É'
-    8.0f,                      // 'Ê'
-    6.0f,                      // 'Ë'
-    6.0f,                      // 'Ï'
-    13.0f,                     // 'Ô'
-    13.0f,                     // 'Ö'
-    10.0f,                     // 'Ù'
-    10.0f,                     // 'Û'
-    10.0f,                     // 'Ü'
-    9.0f,                      // 'ß'
-    8.0f,                      // 'à'
-    8.0f,                      // 'á'
-    8.0f,                      // 'â'
-    8.0f,                      // 'ä'
-    8.0f,                      // 'ç'
-    9.0f,                      // 'è'
-    9.0f,                      // 'é'
-    9.0f,                      // 'ê'
-    9.0f,                      // 'ë'
-    6.0f,                      // 'ï'
-    9.0f,                      // 'ô'
-    9.0f,                      // 'ö'
-    9.0f,                      // 'ù'
-    9.0f,                      // 'û'
-    9.0f,                      // 'ü'
-    14.0f,                     // '[A]'
-    14.0f,                     // '[B]'
-    14.0f,                     // '[C]'
-    14.0f,                     // '[L]'
-    14.0f,                     // '[R]'
-    14.0f,                     // '[Z]'
-    14.0f,                     // '[C-Up]'
-    14.0f,                     // '[C-Down]'
-    14.0f,                     // '[C-Left]'
-    14.0f,                     // '[C-Right]'
-    14.0f,                     // '▼'
-    14.0f,                     // '[Control-Pad]'
-    14.0f,                     // '[D-Pad]'
-    14.0f,                     // ?
-    14.0f,                     // ?
-    14.0f,                     // ?
-    14.0f,                     // ?
-};
-enum {
-    OUTPUT_DECOMP,
-    OUTPUT_BINARY,
-} sOutputType;
-const char* sMsgBoxTypeName[] = {
-    "TEXTBOX_TYPE_BLACK",
-    "TEXTBOX_TYPE_WOODEN",
-    "TEXTBOX_TYPE_BLUE",
-    "TEXTBOX_TYPE_OCARINA",
-    "TEXTBOX_TYPE_NONE_BOTTOM",
-    "TEXTBOX_TYPE_NONE_NO_SHADOW",
-};
-const char* sMsgBoxPosName[] = {
-    "TEXTBOX_POS_VARIABLE",
-    "TEXTBOX_POS_TOP",
-    "TEXTBOX_POS_MIDDLE",
-    "TEXTBOX_POS_BOTTOM",
-};
 
 // # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
@@ -207,7 +28,7 @@ int main(int n, const char** arg) {
     Memfile input_nsv = Memfile_New();
     Memfile output_tbl = Memfile_New();
     Memfile output_data = Memfile_New();
-    TranslateContext* ctx = Context_New(&output_tbl, &output_data, &toml);
+    State* ctx = State_New(&output_tbl, &output_data, &toml);
     
     Toml_Load(&toml, fm);
     Memfile_LoadStr(&input_nsv, input);
@@ -231,77 +52,43 @@ int main(int n, const char** arg) {
         for (var k = 0; k < ctx->item_num; k++) {
             ctx->item_index = k;
             
-            Parse_Item(ctx, x_cpyline(line, 0));
+            Message_HandleItem(ctx, x_cpyline(line, 0));
             line = strline(line, 1);
         }
     }
-    Parse_End(ctx);
+    Message_End(ctx);
     
-    Memfile_SaveBin(&output_tbl, x_fmt("%s%s.tbl", x_path(output), x_filename(output)) );
-    Memfile_SaveBin(&output_data, x_fmt("%s%s.bin", x_path(output), x_filename(output)) );
-    // Dissassemble(ctx, x_fmt("%s%s.h", x_path(output), x_filename(output)));
+    const char* raw_filename = x_fmt("%s%s", x_path(output), x_basename(output));
     
-    Toml_Free(&toml);
+    if (striend(output, ".bin") || striend(output, ".tbl"))
+        Memfile_SaveBin(&output_tbl, x_fmt("%s.tbl", raw_filename) ),
+        Memfile_SaveBin(&output_data, x_fmt("%s.bin", raw_filename) );
+    
+    else if (striend(output, ".h") || striend(output, ".c"))
+        Message_C(ctx, x_fmt("%s.h", raw_filename) );
+    
+    else
+        Memfile_SaveBin(&output_tbl, x_fmt("%s.tbl", raw_filename) ),
+        Memfile_SaveBin(&output_data, x_fmt("%s.bin", raw_filename) ),
+        Message_C(ctx, x_fmt("%s.h", raw_filename) );
+    
+    State_Delete(ctx);
     Memfile_Free(&input_nsv);
     Memfile_Free(&output_tbl);
     Memfile_Free(&output_data);
-    Context_Delete(ctx);
+    Toml_Free(&toml);
     
     info(
         "input:  %32s\n"
         "format: %32s\n"
         "output: %32s\n"
         "time:   %30.2fms",
-        input, fm, output, time_get(2) * 1000.0f
-    );
+        input, fm, output, time_get(2) * 1000.0f);
 }
 
 // # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-void Dissassemble(TranslateContext* this, const char* file) {
-    MsgEntryBE* tbl = this->tbl->data;
-    Memfile* out = new(Memfile);
-    
-    *out = Memfile_New();
-    SegmentSet(0, this->data->str);
-    
-    for (; tbl->text_index < 0xFFFF; tbl++) {
-        // const char* msg = SegmentToVirtual(0, tbl->segment & 0xFFFFFF);
-        _log("entry: %04X", tbl->text_index);
-        Memfile_Fmt(out,
-            "DEFINE_MESSAGE(0x%04X, %s, %s,\n",
-            sMsgBoxTypeName[tbl->type], sMsgBoxPosName[tbl->pos]);
-        
-        Memfile_Fmt(out,
-            "\n\"\",\n\"\"\n)\n");
-    }
-    
-    Memfile_SaveBin(out, file);
-    Memfile_Free(out);
-    vfree(out);
-}
-
-// # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-
-enum {
-    BOX_ENTRY,
-    BOX_BREAK,
-    BOX_CHOICE,
-    BOX_SCROLL,
-};
-
-const char* sBoxType[] = {
-    [BOX_ENTRY] = "entry",
-    [BOX_BREAK] = "break",
-    [BOX_CHOICE] = "choice",
-    [BOX_SCROLL] = "scroll",
-};
-
-#define MAX_WIDTH (64.0f * 5.0f)
-
-// # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-
-static int MsgData_WriteBytes(TranslateContext* this, u32 num, ...) {
+static int Message_WriteByte(State* this, u32 num, ...) {
     va_list va;
     
     va_start(va, num);
@@ -316,44 +103,11 @@ static int MsgData_WriteBytes(TranslateContext* this, u32 num, ...) {
 }
 
 #ifndef __clang__
-#define MsgData_WriteBytes(ctx, ...) MsgData_WriteBytes(ctx, NARGS(__VA_ARGS__), __VA_ARGS__)
+#define Message_WriteByte(ctx, ...) Message_WriteByte(ctx, NARGS(__VA_ARGS__), __VA_ARGS__)
 #endif
 
-static int MsgData_WriteStr(TranslateContext* this, const char* str) {
+static int Message_WriteStr(State* this, const char* str) {
     int len = 0;
-    const char* charmap[][2] = {
-        [0] =  { "À", "\x80" },
-        [1] =  { "î", "\x81" },
-        [2] =  { "Â", "\x82" },
-        [3] =  { "Ä", "\x83" },
-        [4] =  { "Ç", "\x84" },
-        [5] =  { "È", "\x85" },
-        [6] =  { "É", "\x86" },
-        [7] =  { "Ê", "\x87" },
-        [8] =  { "Ë", "\x88" },
-        [9] =  { "Ï", "\x89" },
-        [10] = { "Ô", "\x8A" },
-        [11] = { "Ö", "\x8B" },
-        [12] = { "Ù", "\x8C" },
-        [13] = { "Û", "\x8D" },
-        [14] = { "Ü", "\x8E" },
-        [15] = { "ß", "\x8F" },
-        [16] = { "à", "\x90" },
-        [17] = { "á", "\x91" },
-        [18] = { "â", "\x92" },
-        [19] = { "ä", "\x93" },
-        [20] = { "ç", "\x94" },
-        [21] = { "è", "\x95" },
-        [22] = { "é", "\x96" },
-        [23] = { "ê", "\x97" },
-        [24] = { "ë", "\x98" },
-        [25] = { "ï", "\x99" },
-        [26] = { "ô", "\x9A" },
-        [27] = { "ö", "\x9B" },
-        [28] = { "ù", "\x9C" },
-        [29] = { "û", "\x9D" },
-        [30] = { "ü", "\x9E" },
-    };
     
     for (; *str; str++) {
         if (0xf0 == (0xf8 & *str))
@@ -361,9 +115,9 @@ static int MsgData_WriteStr(TranslateContext* this, const char* str) {
         else if (0xe0 == (0xf0 & *str))
             str += 3;
         else if (0xc0 == (0xe0 & *str)) {
-            for (var i = 0; i < ArrCount(charmap); i++) {
-                if (!memcmp(charmap[i][0], str, 2)) {
-                    MsgData_WriteBytes(this, *charmap[i][1]);
+            for (var i = 0; i < ArrCount(sSpcCharMap); i++) {
+                if (!memcmp(sSpcCharMap[i][0], str, 2)) {
+                    Message_WriteByte(this, *sSpcCharMap[i][1]);
                     len++;
                     
                     break;
@@ -374,7 +128,7 @@ static int MsgData_WriteStr(TranslateContext* this, const char* str) {
         } else {
             _assert(*str != '\n');
             
-            MsgData_WriteBytes(this, *str);
+            Message_WriteByte(this, *str);
             len++;
         }
     }
@@ -382,8 +136,8 @@ static int MsgData_WriteStr(TranslateContext* this, const char* str) {
     return len;
 }
 
-TranslateContext* Context_New(Memfile* tbl, Memfile* data, Toml* toml) {
-    TranslateContext* ctx = new(TranslateContext);
+State* State_New(Memfile* tbl, Memfile* data, Toml* toml) {
+    State* ctx = new(State);
     
     ctx->tbl = tbl;
     ctx->data = data;
@@ -392,13 +146,13 @@ TranslateContext* Context_New(Memfile* tbl, Memfile* data, Toml* toml) {
     return ctx;
 }
 
-void Context_Delete(TranslateContext* this) {
+void State_Delete(State* this) {
     vfree(this);
 }
 
 // # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-static Item* Item_New(TranslateContext* this) {
+static Item* Item_New(State* this) {
     Item* item = new(Item);
     const char* type = Toml_GetStr(this->toml, "entry[%d].item[%d].box_type", this->entry_index, this->item_index);
     int num_ctrl = Toml_ArrItemNum(this->toml, "entry[%d].item[%d].ctrl_type", this->entry_index, this->item_index);
@@ -407,9 +161,6 @@ static Item* Item_New(TranslateContext* this) {
     
     _log("%04X", this->msg_index);
     _log("entry[%d].item[%d]", this->entry_index, this->item_index);
-    _log("num_ctrl: %d", num_ctrl);
-    _log("num_pos:  %d", num_pos);
-    _log("num_val:  %d", num_val);
     _assert(num_pos == num_ctrl);
     
     for (; item->type < ArrCount(sBoxType); item->type++)
@@ -458,7 +209,7 @@ static void Item_Delete(Item* item) {
 
 // # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-static f32 Msg_GetWidth(const char* word) {
+static f32 Message_GetWidth(const char* word) {
     f32 w = 0.0f;
     
     for (; *word; word++)
@@ -466,7 +217,7 @@ static f32 Msg_GetWidth(const char* word) {
     return w;
 }
 
-static void Parse_NewEntry(TranslateContext* this) {
+static void Message_NewEntry(State* this) {
     MsgEntryBE entry = {};
     
     this->marked_choice = false;
@@ -482,13 +233,13 @@ static void Parse_NewEntry(TranslateContext* this) {
     Memfile_Write(this->tbl, &entry, sizeof(entry));
 }
 
-static void Parse_NewItem(TranslateContext* this, Item* item) {
+static void Message_NewItem(State* this, Item* item) {
     switch (item->type) {
         case BOX_ENTRY:
             _assert("something has gone truly wrong" == NULL);
             break;
         case BOX_BREAK:
-            MsgData_WriteBytes(this, CTRL_BOX_BREAK);
+            Message_WriteByte(this, CTRL_BOX_BREAK);
             this->nl_num = 0;
             break;
         case BOX_CHOICE:
@@ -498,29 +249,56 @@ static void Parse_NewItem(TranslateContext* this, Item* item) {
                 if ((this->item_num - this->item_index) == 2) {
                     
                     if (this->nl_num == 0)
-                        MsgData_WriteBytes(this, CTRL_NEWLINE);
-                    MsgData_WriteBytes(this, CTRL_NEWLINE, CTRL_TWO_CHOICE);
+                        Message_WriteByte(this, CTRL_NEWLINE);
+                    Message_WriteByte(this, CTRL_NEWLINE, CTRL_TWO_CHOICE);
                 } else
-                    MsgData_WriteBytes(this, CTRL_NEWLINE, CTRL_THREE_CHOICE);
+                    Message_WriteByte(this, CTRL_NEWLINE, CTRL_THREE_CHOICE);
             }
             break;
         case BOX_SCROLL:
-            MsgData_WriteBytes(this, CTRL_BOX_BREAK_DELAYED, item->delay);
+            Message_WriteByte(this, CTRL_BOX_BREAK_DELAYED, item->delay);
             break;
     }
 }
 
-static inline f32 WordsInfo_GetPos(WordsInfo* info) {
-    if (!info) return 4096.0f;
+static inline f32 BoxInfo_GetPos(BoxInfo* box) {
+    if (!box) return 4096.0f;
     
-    return info->cur_len / info->max_len;
+    return box->cur_len / box->max_len;
 }
 
-static void Parse_WriteControl(TranslateContext* this, Item* item, WordsInfo* info) {
+/*
+   ┌───────────────────────────────────────────────────────────────────────────┐
+   │     Takes care care of handling width based newlining and handles         │
+   │  spacing between words. Will also take care of not newlining when         │
+   │  shift is used.                                                           │
+   └───────────────────────────────────────────────────────────────────────────┘
+ */
+static void Message_Process_Glue(State* this, BoxInfo* box, const char* word) {
+    f32 word_width = Message_GetWidth(word);
+    
+    if (box->shift) {
+        box->cur_len += Message_WriteByte(this, ' ');
+        box->cur_width += sFontWidths[' '];
+        return;
+    }
+    
+    if (!this->marked_choice && box->cur_width + word_width + sFontWidths[' '] >= MAX_WIDTH) {
+        Message_WriteByte(this, CTRL_NEWLINE);
+        this->nl_num++;
+        box->cur_width = this->width_add;
+        box->newline = true;
+    } else if (!box->newline) {
+        box->cur_len += Message_WriteByte(this, ' ');
+        box->cur_width += sFontWidths[' '];
+    }
+}
+
+static void Message_Process_Controls(State* this, Item* item, BoxInfo* box) {
     for (var i = 0; i < item->num_ctrl; i++) {
         Control* ctrl = &item->ctrl[i];
         
-        if (WordsInfo_GetPos(info) >= ctrl->pos) {
+        if (BoxInfo_GetPos(box) >= ctrl->pos) {
             ctrl->pos = FLT_MAX;
             
             _log ("write_control(%*d/%*d): %s::%08X",
@@ -528,7 +306,10 @@ static void Parse_WriteControl(TranslateContext* this, Item* item, WordsInfo* in
                 sCtrlType[ctrl->type], ctrl->value);
             switch (ctrl->type) {
                 case CTRL_TOKENS:
-                    MsgData_WriteBytes(this, ' ', ctrl->type);
+                case CTRL_TIME:
+                    Message_Process_Glue(this, box, " xx:xx");
+                    box->cur_width += Message_GetWidth(" xx:xx");
+                    Message_WriteByte(this, ' ', ctrl->type);
                     break;
                 case CTRL_BOX_BREAK:
                 case CTRL_QUICKTEXT_ENABLE:
@@ -545,67 +326,65 @@ static void Parse_WriteControl(TranslateContext* this, Item* item, WordsInfo* in
                 case CTRL_TWO_CHOICE:
                 case CTRL_THREE_CHOICE:
                 case CTRL_FISH_INFO:
-                case CTRL_TIME:
-                    MsgData_WriteBytes(this, ctrl->type);
+                    Message_WriteByte(this, ctrl->type);
                     break;
                     
                 // Arg 1
                 case CTRL_SHIFT:
-                    if (info) {
-                        if (info->shift)
-                            MsgData_WriteBytes(this, CTRL_NEWLINE);
-                        info->cur_width = ((ctrl->value / 180.0f) * MAX_WIDTH) * 0.5f;
-                        info->shift = true;
+                    if (box) {
+                        if (!box->first_word)
+                            Message_WriteByte(this, CTRL_NEWLINE);
+                        box->cur_width = ((ctrl->value / 180.0f) * MAX_WIDTH) * 0.5f;
+                        box->shift = true;
                     }
                 case CTRL_COLOR:
                 case CTRL_BOX_BREAK_DELAYED:
                 case CTRL_FADE:
                 case CTRL_TEXT_SPEED:
-                    MsgData_WriteBytes(this, ctrl->type, ctrl->value);
+                    Message_WriteByte(this, ctrl->type, ctrl->value);
                     break;
                 case CTRL_HIGHSCORE:
-                    MsgData_WriteBytes(this, ' ', ctrl->type, ctrl->value);
+                    Message_WriteByte(this, ' ', ctrl->type, ctrl->value);
                     break;
                 case CTRL_ITEM_ICON:
                     this->width_add = MAX_WIDTH * 0.12f;
-                    info->cur_width += this->width_add;
-                    MsgData_WriteBytes(this, ctrl->type, ctrl->value);
+                    box->cur_width += this->width_add;
+                    Message_WriteByte(this, ctrl->type, ctrl->value);
                     break;
                     
                 // Arg 2
                 case CTRL_TEXTID:
                 case CTRL_FADE2:
                 case CTRL_SFX:
-                    MsgData_WriteBytes(this, ctrl->type, (ctrl->value >> 8) & 0xFF, ctrl->value & 0xFF);
+                    Message_WriteByte(this, ctrl->type, (ctrl->value >> 8) & 0xFF, ctrl->value & 0xFF);
                     break;
                     
                 // Arg 3
                 case CTRL_BACKGROUND:
-                    MsgData_WriteBytes(this, ctrl->type, (ctrl->value >> 16) & 0xFF, (ctrl->value >> 8) & 0xFF, ctrl->value & 0xFF);
+                    Message_WriteByte(this, ctrl->type, (ctrl->value >> 16) & 0xFF, (ctrl->value >> 8) & 0xFF, ctrl->value & 0xFF);
                     break;
             }
         }
     }
 }
 
-static void Parse_WriteWords(TranslateContext* this, Item* item, const char* msg) {
-    WordsInfo info = {
+static void Message_Process(State* this, Item* item, const char* msg) {
+    BoxInfo box = {
         .max_len    = strlen(msg),
         .cur_width  = this->width_add,
         .newline    = true,
         .first_word = true,
     };
     
-    for (const char* __word = msg; __word; __word = strword(__word, 1)) {
+    for (const char* __word = msg; __word && *__word; __word = strword(__word, 1)) {
         const char* word = x_cpyword(__word, 0);
-        f32 word_width = Msg_GetWidth(word);
         
-        Parse_WriteControl(this, item, &info);
+        Message_Process_Controls(this, item, &box);
         
         {
             const char* a = x_strndup(msg, __word - msg);
             const char* b = word;
-            const char* c = x_strdup(msg + (a ? strlen(a) : 0) + strlen(word));
+            const char* c = x_strdup(msg + (a ? str8len(a) : 0) + str8len(word));
             
             _log("" PRNT_GRAY "%s" PRNT_RSET "%s" PRNT_GRAY "%s",
                 a ? a : "",
@@ -613,24 +392,25 @@ static void Parse_WriteWords(TranslateContext* this, Item* item, const char* msg
                 c ? c : "");
         }
         
-        if (!this->marked_choice && info.cur_width + word_width + sFontWidths[' '] >= MAX_WIDTH) {
-            MsgData_WriteBytes(this, CTRL_NEWLINE);
-            this->nl_num++;
-            info.cur_width = this->width_add;
-            info.newline = true;
-        } else if (!info.newline) {
-            info.cur_len += MsgData_WriteBytes(this, ' ');
-            info.cur_width += sFontWidths[' '];
-        }
-        
-        info.cur_width += word_width;
-        info.cur_len += MsgData_WriteStr(this, word);
-        info.newline = false;
-        info.first_word = false;
+        Message_Process_Glue(this, &box, word);
+        box.cur_width += Message_GetWidth(word);
+        box.cur_len += Message_WriteStr(this, word);
+        box.newline = false;
+        box.first_word = false;
     }
+    
+    box.cur_width = 4069.0f;
+    
+    // All except last index after a 'choice' item
+    if (this->marked_choice && this->item_index + 1 < this->item_num)
+        Message_WriteByte(this, CTRL_NEWLINE);
+    
+    // Flush rest of controllers in
+    if (this->item_index + 1 == this->item_num)
+        Message_Process_Controls(this, item, &box);
 }
 
-void Parse_Item(TranslateContext* this, const char* msg) {
+void Message_HandleItem(State* this, const char* msg) {
     Item* item = Item_New(this);
     u8 box_type_id = this->msg_type_pos >> 4;
     u8 box_pos_id = this->msg_type_pos & 0xF;
@@ -638,56 +418,165 @@ void Parse_Item(TranslateContext* this, const char* msg) {
     if (!msg)
         msg = "";
     else {
-        msg = x_strndup(msg, strlen(msg) * 4 + 2);
-        strrep((void*)msg, "\"", "\\\"");
+        msg = x_strndup(msg, str8len(msg) * 4 + 16);
         strrep((void*)msg, "…", "...");
+        strrep((void*)msg, "’", "'");
     }
     
     _log("type:%X pos:%X", box_type_id, box_pos_id);
     
     if (this->item_index == 0)
-        Parse_NewEntry(this);
+        Message_NewEntry(this);
     else
-        Parse_NewItem(this, item);
+        Message_NewItem(this, item);
     
-    Parse_WriteWords(this, item, msg);
-    
-    // All except last index after a 'choice' item
-    if (this->marked_choice && this->item_index + 1 < this->item_num)
-        MsgData_WriteBytes(this, CTRL_NEWLINE);
-    
-    // Flush rest of controllers in
-    if (this->item_index + 1 == this->item_num)
-        Parse_WriteControl(this, item, NULL);
+    Message_Process(this, item, msg);
     
     if (box_type_id == 3 /* TEXTBOX_TYPE_OCARINA */)
-        MsgData_WriteBytes(this, CTRL_NEWLINE, CTRL_NEWLINE, CTRL_NEWLINE);
+        Message_WriteByte(this, CTRL_NEWLINE, CTRL_NEWLINE, CTRL_NEWLINE);
     
     Item_Delete(item);
     
     if (this->item_index + 1 == this->item_num)
-        MsgData_WriteBytes(this, CTRL_END);
+        Message_WriteByte(this, CTRL_END);
 }
 
-void Parse_End(TranslateContext* this) {
+void Message_End(State* this) {
     this->msg_index = 0xFFFC;
     this->msg_type_pos = 0x00;
-    Parse_NewEntry(this);
-    MsgData_WriteStr(this, "0123456789");
-    MsgData_WriteBytes(this, CTRL_NEWLINE);
-    MsgData_WriteStr(this, "ABCDEFGHIJKLMN");
-    MsgData_WriteBytes(this, CTRL_NEWLINE);
-    MsgData_WriteStr(this, "OPQRSTUVWXYZ");
-    MsgData_WriteBytes(this, CTRL_NEWLINE);
-    MsgData_WriteStr(this, "abcdefghijklmn");
-    MsgData_WriteBytes(this, CTRL_NEWLINE);
-    MsgData_WriteStr(this, "opqrstuvwxyz");
-    MsgData_WriteBytes(this, CTRL_NEWLINE);
-    MsgData_WriteStr(this, " -.");
-    MsgData_WriteBytes(this, CTRL_NEWLINE, CTRL_END);
+    Message_NewEntry(this);
+    Message_WriteStr(this, "0123456789");
+    Message_WriteByte(this, CTRL_NEWLINE);
+    Message_WriteStr(this, "ABCDEFGHIJKLMN");
+    Message_WriteByte(this, CTRL_NEWLINE);
+    Message_WriteStr(this, "OPQRSTUVWXYZ");
+    Message_WriteByte(this, CTRL_NEWLINE);
+    Message_WriteStr(this, "abcdefghijklmn");
+    Message_WriteByte(this, CTRL_NEWLINE);
+    Message_WriteStr(this, "opqrstuvwxyz");
+    Message_WriteByte(this, CTRL_NEWLINE);
+    Message_WriteStr(this, " -.");
+    Message_WriteByte(this, CTRL_NEWLINE, CTRL_END);
     
     this->msg_index = 0xFFFD;
-    Parse_NewEntry(this);
-    MsgData_WriteBytes(this, CTRL_END);
+    Message_NewEntry(this);
+    Message_WriteByte(this, CTRL_END);
     Memfile_Align(this->data, 16);
+}
+
+// # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
+void Message_C(State* this, const char* file) {
+    MsgEntryBE* tbl = this->tbl->data;
+    Memfile* out = new(Memfile);
+    
+    *out = Memfile_New();
+    SegmentSet(0, this->data->str);
+    
+    for (;; tbl++) {
+        const u8* msg = SegmentToVirtual(0, tbl->segment & 0xFFFFFF);
+        _log("entry: %04X", tbl->text_index);
+        Memfile_Fmt(out,
+            "DEFINE_MESSAGE(0x%04X, %s, %s,\n\"",
+            tbl->text_index, sMsgBoxTypeName[tbl->type], sMsgBoxPosName[tbl->pos]);
+        
+        for (; *msg != CTRL_END; msg++) {
+            switch (*msg) {
+                case 'a' ... 'z':
+                case 'A' ... 'Z':
+                case '0' ... '9':
+                case ' ':
+                case '.':
+                case '!':
+                case '-':
+                case '\'':
+                    Memfile_Write(out, msg, 1);
+                    break;
+                case '\"':
+                    Memfile_Cat(out, "\\\"");
+                    break;
+                    
+                case CTRL_A ... CTRL_CRIGHT:
+                    Memfile_Fmt(out, "\\x%02X", *msg);
+                    break;
+                    
+                case CTRL_NEWLINE:
+                    Memfile_Cat(out, "\\n\"\n\"");
+                    break;
+                    
+                case CTRL_BOX_BREAK:
+                    Memfile_Cat(out, "\"\n\"");
+                case CTRL_TOKENS:
+                case CTRL_TIME:
+                case CTRL_QUICKTEXT_ENABLE:
+                case CTRL_QUICKTEXT_DISABLE:
+                case CTRL_PERSISTENT:
+                case CTRL_EVENT:
+                case CTRL_AWAIT_BUTTON_PRESS:
+                case CTRL_NAME:
+                case CTRL_OCARINA:
+                case CTRL_MARATHON_TIME:
+                case CTRL_RACE_TIME:
+                case CTRL_POINTS:
+                case CTRL_UNSKIPPABLE:
+                case CTRL_TWO_CHOICE:
+                case CTRL_THREE_CHOICE:
+                case CTRL_FISH_INFO:
+                    Memfile_Fmt(out, "\" %s \"", x_enumify(sCtrlType[*msg]));
+                    break;
+                    
+                // Arg 1
+                case CTRL_BOX_BREAK_DELAYED:
+                    Memfile_Fmt(out, "\"\nBOX_BREAK_DELAYED(\"\\x%02X\")\n\"", *msg, *(msg + 1));
+                    break;
+                case CTRL_SHIFT:
+                case CTRL_COLOR:
+                case CTRL_FADE:
+                case CTRL_TEXT_SPEED:
+                case CTRL_HIGHSCORE:
+                case CTRL_ITEM_ICON:
+                    Memfile_Fmt(out, "\\x%02X\\x%02X", *msg,
+                        *(msg + 1));
+                    msg++;
+                    break;
+                    
+                // Arg 2
+                case CTRL_TEXTID:
+                case CTRL_FADE2:
+                case CTRL_SFX:
+                    Memfile_Fmt(out, "\\x%02X\\x%02X\\x%02X", *msg,
+                        *(msg + 1), *(msg + 2));
+                    
+                    msg += 2;
+                    break;
+                    
+                // Arg 3
+                case CTRL_BACKGROUND:
+                    Memfile_Fmt(out, "\\x%02X\\x%02X\\x%02X\\x%02X", *msg,
+                        *(msg + 1), *(msg + 2), *(msg + 3));
+                    msg += 3;
+                    break;
+                    
+                case 0x80 ... 0x9E:
+                    for (var i = 0; i < ArrCount(sSpcCharMap); i++) {
+                        if ((u8)(*sSpcCharMap[i][1]) == *msg) {
+                            Memfile_Fmt(out, "%s", sSpcCharMap[i][0]);
+                            
+                            break;
+                        }
+                    }
+                    break;
+            }
+        }
+        
+        Memfile_Fmt(out,
+            "\",\n\"\",\n\"\"\n)\n");
+        
+        if (tbl->text_index == 0xFFFD)
+            break;
+    }
+    
+    Memfile_SaveBin(out, file);
+    Memfile_Free(out);
+    vfree(out);
 }

@@ -4,7 +4,7 @@ bin
 settings.mk
 z64translated
 z64translated.exe
-test.h
-message_data.h
 *.tbl
 *.bin
+*.h
+!*/**.h
